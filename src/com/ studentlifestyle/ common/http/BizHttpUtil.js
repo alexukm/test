@@ -84,22 +84,12 @@ export function accessToken(params = {}) {
 //     return request.postFromData(featureAndPath.DRIVER_UPLOAD.path, SupportContextType.MULTIPART_FROM, formData)
 // }
 
-export async function driverUpload(file) {
+export async function driverUpload(file,params) {
     let formData = new FormData();
-    // let fileType = file.uri.substring(uri.lastIndexOf(".") + 1);
-    const param = {
-        "uploadType": 0,
-        "userPhone": "601394569874"
-    }
-    formData.append('file', {
-        uri: file.uri,
-        name: '1682842702612.jpg',
-        type: 'image/jpeg',
-    });
-    formData.append('Content-Type', 'image/png');
-    formData.append('driverUploadParam',JSON.stringify(param))
-    // code = 81dc9bdb52d04dc20036dbd8313ed055
-    return request.post(featureAndPath.DRIVER_UPLOAD.path, SupportContextType.MULTIPART_FROM, {params: formData});
+    const file1 = new File([file], "filename.jpeg");
+    formData.append('file', file1)
+    const requestURL = featureAndPath.DRIVER_UPLOAD.path + `?uploadType=${params['uploadType']}&userPhone=${params['userPhone']}`;
+    return request.postFromData(requestURL, SupportContextType.MULTIPART_FROM, {formData: formData});
 }
 
 export function driverLogin(params = {}) {

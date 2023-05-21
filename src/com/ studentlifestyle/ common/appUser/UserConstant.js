@@ -11,7 +11,7 @@ const CarType = {
     Convertible: 4
 }
 
-const DriverImage = {
+export const DriverImageType = {
     //自拍
     Selfie: 0,
     //车保信息

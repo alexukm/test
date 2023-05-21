@@ -1,7 +1,7 @@
 import axios, {request} from "axios";
 import {getUserType, getUserID, getUserToken} from "../appUser/UserConstant";
 
-const defaultRequestAddress = "192.168.49.128"
+const defaultRequestAddress = "10.37.32.54"
 const defaultRequestPort = "8080"
 
 const contextPath = "/xfc";
@@ -127,7 +127,7 @@ export class HttpUtil {
         });
     }
 
-    postFromData(uri, supportContextType2, formData = {}, header = {}) {
+    postFromData(uri, supportContextType2,{formData,header}) {
         const requestURL = this.getRequestURI(uri);
         return new Promise((resolve, catchException) => {
             const headers = headerMap({supportContextType: supportContextType2, header: header});
