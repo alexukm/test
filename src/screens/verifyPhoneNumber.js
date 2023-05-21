@@ -1,11 +1,11 @@
-SUCCESS_CODE = 200;
-ERROR_CODE = 500;
+const SUCCESS_CODE = 200;
+const ERROR_CODE = 500;
 
 
-function OTPPass() {
+export function OTPPass(code) {
     return code === SUCCESS_CODE;
 }
 
-function ORPError() {
+function OTPError(code) {
     return code === ERROR_CODE;
 }
