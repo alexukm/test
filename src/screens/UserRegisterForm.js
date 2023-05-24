@@ -12,7 +12,9 @@ import {
     VStack,
     Text,
 } from 'native-base';
+import { MD5 } from 'crypto-js';
 import { smsSend, userRegistry } from "../com/ studentlifestyle/ common/http/BizHttpUtil";
+import { setUserToken } from "../com/ studentlifestyle/ common/appUser/UserConstant";
 
 const RegisterScreen = () => {
     const [firstName, setFirstName] = useState('');
@@ -24,6 +26,8 @@ const RegisterScreen = () => {
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [isResendOtpActive, setIsResendOtpActive] = useState(false);
     const [secondsRemaining, setSecondsRemaining] = useState(0);
+    //验证码获取之前灰度
+    const [isCodeRequested, setIsCodeRequested] = useState(false);
 
     const countryData = [
         { code: 'MY', label: '60' },
@@ -39,6 +43,10 @@ const RegisterScreen = () => {
             firstNameInputRef.current.focus();
         }
     }, []);
+
+    useEffect(()=>{
+        listenVerificationCode()
+    }, [verificationCode]);
 
     const submitData = () => {
         // 检查所有输入框都已填写
@@ -69,11 +77,14 @@ const RegisterScreen = () => {
 
         // 调用后端函数发送验证码
         const userPhone = selectedValue + phoneNumber;
+
         smsSend(userPhone)
             .then(data => {
                 if (data.code === 200) {
                     setIsTimerActive(true);
                     setIsResendOtpActive(false);
+                    //当验证码发送成功后，把 isCodeRequested 设为 true
+                    setIsCodeRequested(true);
                     let counter = 30;
                     setSecondsRemaining(counter);
                     const timer = setInterval(() => {
@@ -124,22 +135,33 @@ const RegisterScreen = () => {
             });
     };
 
+    const listenVerificationCode = ()=> {
+        if (verificationCode.length === 4) { // 当验证码长度为4时，提交验证
+            doUserRegistry();
+        }
+    }
     const doUserRegistry = () => {
         const userPhone = selectedValue + phoneNumber;
+
+        const md5VerificationCode = MD5(verificationCode).toString();
+
         const registryParams = {
             firstName: firstName,
             lastName: lastName,
             email: email,
             userPhone: userPhone,
-            deviceId: 'ASAF414561CAD1',
+            deviceId: '123',
             platform: 0,
-            code: verificationCode,
-        };
+            // code: verificationCode,
+            code: md5VerificationCode, // 使用加密后的验证码
 
+        };
         userRegistry(registryParams)
             .then(data => {
                 if (data.code === 200) {
                     console.log('注册成功', data);
+                    setUserToken(data.data);
+                    navigation.navigate("Example");
                     // 注册成功后的操作，如跳转到其他页面
                 } else {
                     console.log('注册失败', data.message);
@@ -148,6 +170,8 @@ const RegisterScreen = () => {
             .catch(error => {
                 console.log('注册失败', error);
             });
+
+        setVerificationCode('');
     };
 
     const renderButton = () => {
@@ -257,8 +281,10 @@ const RegisterScreen = () => {
                                     onChangeText={setVerificationCode}
                                     keyboardType="numeric"
                                     maxLength={4}
+                                    isDisabled={!isCodeRequested} // 当 isCodeRequested 为 false 时，输入框被禁用
                                 />
                             </FormControl>
+
                             {renderButton()}
                         </VStack>
                     </Box>
@@ -268,7 +294,7 @@ const RegisterScreen = () => {
     );
 };
 
-export default function App() {
+export default function UserSignUp() {
     return (
         <NativeBaseProvider>
             <RegisterScreen />

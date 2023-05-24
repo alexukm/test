@@ -79,7 +79,10 @@ export const SupportContextType = {
 }
 
 function headerMap({supportContextType = null, header = {}},) {
-    header = Object.assign(header, defaultHeaders.getUserType(getUserType()), defaultHeaders.getUserIdentifier(getUserID()), defaultHeaders.getAuthentication(getUserToken()))
+    header = Object.assign(header, defaultHeaders.getUserType(getUserType()), defaultHeaders.getUserIdentifier(getUserID()));
+    getUserToken(data=>{
+        header = Object.assign(header, defaultHeaders.getAuthentication(data));
+    })
     if (supportContextType) {
         Object.assign(header, ContextType.getSupportHeader(supportContextType))
     }

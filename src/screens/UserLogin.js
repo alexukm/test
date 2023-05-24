@@ -1,33 +1,28 @@
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MD5 } from "crypto-js";
 import React, { useState, useEffect } from "react";
 import {userLogin, smsSend} from "../com/ studentlifestyle/ common/http/BizHttpUtil";
 import { useNavigation } from "@react-navigation/native";
+import {setUserToken} from "../com/ studentlifestyle/ common/appUser/UserConstant";
 import {
     FormControl,
     Select,
-    CheckIcon,
     Center,
     Modal,
-    WarningOutlineIcon,
-    Box,
     VStack,
     Button,
     NativeBaseProvider,
     Input,
     Text,
-    Flex,
     HStack,
 } from "native-base";
-import axios from "axios";
 
 const countryCodes = {
     my: "60",
     cn: "86",
 };
 
-function Example() {
+function UserScreen() {
 
     const navigation = useNavigation();
 
@@ -72,10 +67,7 @@ function Example() {
         }
 
         const prefix = countryCodes[selectedValue];
-        const phoneNumber = {
-            'phoneNumber': prefix ? prefix + value : value,
-        }
-        console.log(prefix)
+        const phoneNumber = prefix ? prefix + value : value;
         smsSend(phoneNumber)
             .then(data => {
                 if (data.code === 200) {
@@ -137,8 +129,10 @@ function Example() {
             .then(data => {
                 if (data.code === 200) {
                     console.log("登录成功：" + data.data)
+                    setUserToken(data.data)
+                    alert("Niubi, 登陆成功")
                     // 导航到下一个页面
-                    // navigation.navigate("NextScreen");
+                    // navigation.navigate("HelloWorldApp");
                 } else {
                     console.log("登录失败" + data.message);
                     alert("Login failed");
@@ -243,11 +237,11 @@ function Example() {
     );
 }
 
-export default function App() {
+export default function User() {
     return (
         <NativeBaseProvider>
             <Center flex={1}>
-                <Example />
+                <UserScreen />
             </Center>
         </NativeBaseProvider>
     );

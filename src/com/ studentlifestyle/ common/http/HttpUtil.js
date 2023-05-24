@@ -1,7 +1,7 @@
 import axios, {request} from "axios";
 import {getUserType, getUserID, getUserToken} from "../appUser/UserConstant";
 
-const defaultRequestAddress = "10.37.32.54"
+const defaultRequestAddress = "127.0.0.1"
 const defaultRequestPort = "8080"
 
 const contextPath = "/xfc";
@@ -79,7 +79,10 @@ export const SupportContextType = {
 }
 
 function headerMap({supportContextType = null, header = {}},) {
-    header = Object.assign(header, defaultHeaders.getUserType(getUserType()), defaultHeaders.getUserIdentifier(getUserID()), defaultHeaders.getAuthentication(getUserToken()))
+    header = Object.assign(header, defaultHeaders.getUserType(getUserType()), defaultHeaders.getUserIdentifier(getUserID()));
+    getUserToken(data => {
+        header =  Object.assign(header,defaultHeaders.getAuthentication(data));
+    })
     if (supportContextType) {
         Object.assign(header, ContextType.getSupportHeader(supportContextType))
     }
@@ -116,7 +119,6 @@ export class HttpUtil {
         const requestURL = this.getRequestURI(uri);
         return new Promise((resolve, catchException) => {
             const headers = headerMap({supportContextType: supportContextType2, header: header});
-            console.log(headers)
             this.instance.post(requestURL, requestBody, {headers})
                 .then(response => {
                     resolve(response.data)

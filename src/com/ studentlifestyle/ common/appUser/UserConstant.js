@@ -1,3 +1,6 @@
+import {asyncGetValue, getValue, setKeyValue} from "./LocalStorageUtil";
+import {defaultHeaders} from "../http/HttpUtil";
+
 export const UserOrigin = {APP: 0}
 export const UserPlatform = {Android: 1, IOS: 2,}
 
@@ -34,6 +37,14 @@ export function getUserType() {
     return 0;
 }
 
-export function getUserToken() {
-    return 'Bearer 76767f33f7d6f483f17c86766d58cb42';
+export function setUserToken(token) {
+    setKeyValue(defaultHeaders.TOKEN, token);
+}
+
+export function getUserToken(resolveToken) {
+    asyncGetValue(defaultHeaders.TOKEN).then(data => {
+        resolveToken(data)
+    }).catch( error =>
+        console.log(error)
+    )
 }

@@ -55,7 +55,10 @@ export function userLogin(params = {}) {
 }
 
 
-export function smsSend(params = {}) {
+export function smsSend(userPhone) {
+    const params = {
+        phoneNumber: userPhone
+    }
     return request.get(featureAndPath.SMS_SEND.path, params)
 }
 
